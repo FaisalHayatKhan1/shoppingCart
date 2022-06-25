@@ -2,12 +2,12 @@ import { createSlice, configureStore } from "@reduxjs/toolkit";
 
 const toogleSlice=createSlice({
     name:'btnToogle',
-    initialState:{valueToogle:false, formVal:[]},
+    initialState:{valueToogle:false, formVal:{}},
     reducers:{
         btnToogle(state, action){
             state.valueToogle=true;
             
-            state.formVal=[...state.formVal,action.payload]
+            state.formVal=action.payload
         }
     }
 })

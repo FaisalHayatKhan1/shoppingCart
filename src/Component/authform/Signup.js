@@ -1,11 +1,11 @@
 import { useState } from "react";
 import useInput from "../../hooks/user-input";
-
+import axios from "axios";
 const isNotEmpty = (value) => value.trim() !== "";
 const isEmail = (value) => value.includes("@") && value.trim() !== "";
 const ispass = (value) => value.trim() !== "";
 const LogIn = (props) => {
-    const[isAdmin, setIsAdmin]= useState(false)
+  const [isAdmin, setIsAdmin] = useState(false);
   const {
     value: firstNameValue,
     isValid: firstNameIsValid,
@@ -51,8 +51,15 @@ const LogIn = (props) => {
     if (!formIsValid) {
       return;
     }
-    console.log(firstNameValue, lastNameValue, emailValue, passValue ,isAdmin);
-
+    console.log(firstNameValue, lastNameValue, emailValue, passValue, isAdmin);
+    axios.post(
+      `https://react-app-d64b7-default-rtdb.firebaseio.com/users.json`,
+      { firstNameValue, lastNameValue, emailValue, passValue, isAdmin }
+    ).then(res=>{
+      console.log(res);
+    }).catch(error=>{
+      console.log(error);
+    })
     resetFirstName();
     resetLastName();
     resetEmail();
@@ -133,11 +140,11 @@ const LogIn = (props) => {
         </div>
         <div className="form-check form-switch">
           <input
-          onChange={()=>setIsAdmin(true)}          
+            onChange={() => setIsAdmin(true)}
             className="form-check-input"
             type="checkbox"
           />
-          <label className="form-check-label" >
+          <label className="form-check-label">
             Default switch checkbox input
           </label>
         </div>

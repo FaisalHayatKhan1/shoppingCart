@@ -1,14 +1,18 @@
-
 import useInput from "../../hooks/user-input";
 import { useDispatch } from "react-redux/es/exports";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate, Link } from "react-router-dom";
+import useData from "../../hooks/users-data";
 import "./Auth.css";
 import { dispatchAction } from "../../store/Button";
+import { useState } from "react";
+
 const isEmail = (value) => value.includes("@") && value.trim() !== "";
 const ispass = (value) => value.trim() !== "";
 const SignUp = (props) => {
-  const navigate=useNavigate();
-  const dispatch=useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { allUsers: usersAll } = useData();
+  const [isUser, setIsUser] = useState(false);
   const {
     value: emailValue,
     isValid: emailIsValid,
@@ -31,17 +35,22 @@ const SignUp = (props) => {
   if (emailIsValid && passIsValid) {
     formIsValid = true;
   }
-
   const submitHandler = (event) => {
     event.preventDefault();
 
     if (!formIsValid) {
       return;
     }
-    dispatch(dispatchAction.btnToogle({email:emailValue, password: passValue}))
-    console.log("Submitted!");
-    console.log(emailValue, passIsValid);
-    navigate('/home')
+    const values = usersAll.find((data) => data.email === emailValue);
+    if (!values) {
+      setIsUser(true)
+      return; 
+    }
+    localStorage.setItem("users", emailValue);
+    dispatch(
+      dispatchAction.btnToogle({ email: emailValue, password: passValue })
+    );
+    navigate(`/home/${values.id}`);
     resetEmail();
     resetpass();
   };
@@ -55,6 +64,7 @@ const SignUp = (props) => {
   return (
     <div className="d-flex justify-content-center mt-5 pt-5">
       <form onSubmit={submitHandler} className="formSingUp">
+      {isUser && <label className="text-danger">user does not exit</label>}
         <div className={emailClasses}>
           <label htmlFor="name">E-Mail Address</label>
           <input
@@ -85,6 +95,9 @@ const SignUp = (props) => {
         <div className="form-actions text-center">
           <button disabled={!formIsValid}>Submit</button>
         </div>
+        <Link to="/sign-up">
+          <div className="text-center my-2">Create a new Account</div>
+        </Link>
       </form>
     </div>
   );
