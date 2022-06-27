@@ -1,10 +1,14 @@
+/** @format */
+
 import { useState } from "react";
 import useInput from "../../hooks/user-input";
 import axios from "axios";
+import useData from "../../hooks/users-data";
 const isNotEmpty = (value) => value.trim() !== "";
 const isEmail = (value) => value.includes("@") && value.trim() !== "";
 const ispass = (value) => value.trim() !== "";
 const LogIn = (props) => {
+  const { isAdminLog: adminStatus } = useData();
   const [isAdmin, setIsAdmin] = useState(false);
   const {
     value: firstNameValue,
@@ -44,7 +48,19 @@ const LogIn = (props) => {
   if (firstNameIsValid && lastNameIsValid && emailIsValid && passIsValid) {
     formIsValid = true;
   }
-
+  const adminShowToggle =
+    adminStatus === undefined || adminStatus.admin === false ? (
+      <div className='form-check form-switch'>
+        <input
+          onChange={() => setIsAdmin(true)}
+          className='form-check-input'
+          type='checkbox'
+        />
+        <label className='form-check-label text-white fw-bold'>is Admin</label>
+      </div>
+    ) : (
+      ""
+    );
   const submitHandler = (event) => {
     event.preventDefault();
 
@@ -52,14 +68,20 @@ const LogIn = (props) => {
       return;
     }
     console.log(firstNameValue, lastNameValue, emailValue, passValue, isAdmin);
-    axios.post(
-      `https://react-app-d64b7-default-rtdb.firebaseio.com/users.json`,
-      { firstNameValue, lastNameValue, emailValue, passValue, isAdmin }
-    ).then(res=>{
-      console.log(res);
-    }).catch(error=>{
-      console.log(error);
-    })
+    axios
+      .post(`https://react-app-d64b7-default-rtdb.firebaseio.com/users.json`, {
+        firstNameValue,
+        lastNameValue,
+        emailValue,
+        passValue,
+        isAdmin,
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     resetFirstName();
     resetLastName();
     resetEmail();
@@ -80,75 +102,66 @@ const LogIn = (props) => {
     : "form-control-my";
 
   return (
-    <div className="d-flex justify-content-center mt-5 pt-5">
+    <div className='d-flex justify-content-center mt-5 pt-5'>
       <form onSubmit={submitHandler}>
-        <div className="control-group">
+        <div className='control-group'>
           <div className={firstNameClasses}>
-            <label htmlFor="name">First Name</label>
+            <label htmlFor='name'>First Name</label>
             <input
-              type="text"
-              id="name"
+              type='text'
+              id='name'
               value={firstNameValue}
               onChange={firstNameChangeHandler}
               onBlur={firstNameBlurHandler}
             />
             {firstNameHasError && (
-              <p className="error-text">Please enter a first name.</p>
+              <p className='error-text'>Please enter a first name.</p>
             )}
           </div>
           <div className={lastNameClasses}>
-            <label htmlFor="name">Last Name</label>
+            <label htmlFor='name'>Last Name</label>
             <input
-              type="text"
-              id="name"
+              type='text'
+              id='name'
               value={lastNameValue}
               onChange={lastNameChangeHandler}
               onBlur={lastNameBlurHandler}
             />
             {lastNameHasError && (
-              <p className="error-text">Please enter a last name.</p>
+              <p className='error-text'>Please enter a last name.</p>
             )}
           </div>
         </div>
-        <div className="control-group">
+        <div className='control-group'>
           <div className={emailClasses}>
-            <label htmlFor="name">E-Mail Address</label>
+            <label htmlFor='name'>E-Mail Address</label>
             <input
-              type="text"
-              id="name"
+              type='text'
+              id='name'
               value={emailValue}
               onChange={emailChangeHandler}
               onBlur={emailBlurHandler}
             />
             {emailHasError && (
-              <p className="error-text">Please enter a valid email address.</p>
+              <p className='error-text'>Please enter a valid email address.</p>
             )}
           </div>
           <div className={passClasses}>
-            <label htmlFor="name">Password</label>
+            <label htmlFor='name'>Password</label>
             <input
-              type="text"
-              id="name"
+              type='text'
+              id='name'
               value={passValue}
               onChange={passChangeHandler}
               onBlur={passBlurHandler}
             />
             {passHasError && (
-              <p className="error-text">Please enter a password</p>
+              <p className='error-text'>Please enter a password</p>
             )}
           </div>
         </div>
-        <div className="form-check form-switch">
-          <input
-            onChange={() => setIsAdmin(true)}
-            className="form-check-input"
-            type="checkbox"
-          />
-          <label className="form-check-label">
-            Default switch checkbox input
-          </label>
-        </div>
-        <div className="form-actions">
+        {adminShowToggle}
+        <div className='form-actions'>
           <button disabled={!formIsValid}>Submit</button>
         </div>
       </form>

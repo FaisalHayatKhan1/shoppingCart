@@ -1,7 +1,9 @@
+/** @format */
+
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 const useData = () => {
-  const selectedUser = useSelector((state) => state.toogle.formVal);
+  const selectedUser = useSelector((data) => data.toggleAction.formVal);
   const [loginUser, setLoginUser] = useState([]);
   async function getUsersData() {
     let usersData = [];
@@ -18,7 +20,7 @@ const useData = () => {
         admin: data[key].isAdmin,
       });
     }
-    console.log("sadasdad",usersData)
+    console.log("sadasdad", usersData);
     setLoginUser(usersData);
   }
   useEffect(() => {
@@ -28,9 +30,11 @@ const useData = () => {
     loginUser.length !== 0
       ? loginUser.find((data) => data.email === selectedUser.email)
       : undefined;
+  const adminSet = loginUser.find((data) => data.admin === true)
   return {
-    selectedData:data,
+    selectedData: data,
     allUsers: loginUser,
+    isAdminLog: adminSet,
   };
 };
 
